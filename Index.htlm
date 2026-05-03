@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Purkukohdekartta</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    #map { height: 100vh; width: 100%; }
+
+    .popup-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .status {
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .planned { background: #f1c40f; }
+    .ongoing { background: #e67e22; color: white; }
+    .done { background: #7f8c8d; color: white; }
+  </style>
+</head>
+
+<body>
+<div id="map"></div>
+
+<script>
+  // Kartan alustus (Suomi keskipiste)
+  const map = L.map('map').setView([65.0121, 25.4651], 5);
+
+  // Taustakartta
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+
+  // Demo-data (voit myöhemmin korvata API:lla)
+  const sites = [
+    {
+      name: "Oulun vanha koulu",
+      type: "school",
+      status: "planned",
+      lat: 65.0123,
+      lng: 25.4651,
+      address: "Oulu"
+    },
+    {
+      name: "Helsingin sairaalarakennus",
+      type: "hospital",
+      status: "ongoing",
+      lat: 60.1695,
+      lng: 24.9354,
+      address: "Helsinki"
+    },
+    {
+      name: "Tampereen toimistorakennus",
+      type: "office",
+      status: "done",
+      lat: 61.4978,
+      lng: 23.7610,
+      address: "Tampere"
+    }
+  ];
+
+  function statusClass(status) {
+    if (status === "planned") return "planned";
+    if (status === "ongoing") return "ongoing";
+    return "done";
+  }
+
+  // Lisää markerit
+  sites.forEach(site => {
+    const marker = L.circleMarker([site.lat, site.lng], {
+      radius: 8,
+      color: "#2c3e50",
+      fillColor:
+        site.status === "planned" ? "#f1c40f" :
+        site.status === "ongoing" ? "#e67e22" : "#7f8c8d",
+      fillOpacity: 0.9
+    }).addTo(map);
+
+    marker.bindPopup(`
+      <div class="popup-title">${site.name}</div>
+      <div>${site.address}</div>
+      <div class="status ${statusClass(site.status)}">
+        ${site.status}
+      </div>
+    `);
+  });
+</script>
+
+</body>
+</html>
